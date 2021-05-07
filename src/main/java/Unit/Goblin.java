@@ -1,6 +1,6 @@
 package Unit;
 
-public class Warrior extends Player {
+public class Goblin extends Monster {
     private final String name;
     private int hpMax;
     private int hp;
@@ -9,31 +9,23 @@ public class Warrior extends Player {
     private int atk;
     private double atkSpeed;
 
-    public Warrior (){
+    public Goblin(){
         super();
-        this.name = "전사";
-        this.hpMax = 1000;
-        this.hp = 1000;
+        this.name = "고블린";
+        this.hpMax = 500;
+        this.hp = 500;
         this.rageMax = 100;
         this.rage = 100;
-        this.atk = 100;
+        this.atk = 30;
         this.atkSpeed = 1.5;
-        System.out.println("전사입니다");
-    }
-
-    void bash(){
-
-    }
-
-    void berserk(){
-
+        System.out.println("고블린 출현");
     }
 
     @Override
     public void run(){
         Warrior warrior = new Warrior();
         Goblin goblin = new Goblin();
-        attack(warrior, goblin);
+        attack(goblin, warrior);
     }
 
     @Override
