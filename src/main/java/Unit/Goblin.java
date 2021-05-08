@@ -8,6 +8,7 @@ public class Goblin extends Monster {
     private int rage;
     private int atk;
     private double atkSpeed;
+    private Unit target;
 
     public Goblin(){
         super();
@@ -23,14 +24,18 @@ public class Goblin extends Monster {
 
     @Override
     public void run(){
-        Warrior warrior = new Warrior();
-        Goblin goblin = new Goblin();
-        attack(goblin, warrior);
+        Goblin goblinInstance = new Goblin();
+        attack(goblinInstance, target);
     }
 
     @Override
     public String toString(){
         return name;
+    }
+
+
+    public void setTarget(Unit target) {
+        this.target = target;
     }
 
 }

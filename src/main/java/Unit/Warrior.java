@@ -1,6 +1,8 @@
 package Unit;
 
 public class Warrior extends Player {
+    private static Warrior warriorSingleton = new Warrior();
+
     private final String name;
     private int hpMax;
     private int hp;
@@ -8,8 +10,9 @@ public class Warrior extends Player {
     private int rage;
     private int atk;
     private double atkSpeed;
+    private Unit target;
 
-    public Warrior (){
+    private Warrior (){
         super();
         this.name = "전사";
         this.hpMax = 1000;
@@ -21,6 +24,11 @@ public class Warrior extends Player {
         System.out.println("전사입니다");
     }
 
+    public static Warrior getInstance(){
+        return warriorSingleton;
+    }
+
+
     void bash(){
 
     }
@@ -31,14 +39,17 @@ public class Warrior extends Player {
 
     @Override
     public void run(){
-        Warrior warrior = new Warrior();
-        Goblin goblin = new Goblin();
-        attack(warrior, goblin);
+        attack(warriorSingleton, target);
     }
 
     @Override
     public String toString(){
         return name;
+    }
+
+
+    public void setTarget(Unit target) {
+        this.target = target;
     }
 
 }
