@@ -10,6 +10,25 @@ public abstract class Unit implements Runnable {
     private double atkSpeed;
     private Unit target;
 
+    @Override
+    public void run(){
+        attack(getTarget());
+    }
+
+    public void attack (Unit target) {
+        while (getHp() > 0 && target.getHp() > 0){
+            target.setHp(Math.max( 0, target.getHp() - getAtk() ));
+            System.out.println(getName() + "이(가) 기본공격으로 " + target.getName() + "에게 " + getAtk() + " 피해를 입혔습니다.");
+            System.out.println(target.getName() + " 체력: " + target.getHp());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     //getter&setter
     public String getName() {
@@ -75,5 +94,6 @@ public abstract class Unit implements Runnable {
     public void setTarget(Unit target) {
         this.target = target;
     }
+
 }
 

@@ -13,9 +13,4 @@ public class Goblin extends Monster {
         System.out.println("고블린 출현");
     }
 
-    @Override
-    public void run(){
-        Goblin goblinInstance = new Goblin();
-    }
-
 }

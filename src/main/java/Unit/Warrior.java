@@ -20,29 +20,9 @@ public class Warrior extends Player {
 
 
     void bash(){
-
     }
 
     void berserk(){
-
-    }
-
-    @Override
-    public void run(){
-        attack(warriorSingleton, getTarget());
-    }
-
-    public void attack (Warrior attacker, Unit target) {
-        while (attacker.getHp() > 0 && target.getHp() > 0){
-            target.setHp(target.getHp() - attacker.getAtk());
-            System.out.println(attacker.getName() + "은(는) 기본공격으로 " + target.getName() + "에게 피해를 입혔습니다.");
-            System.out.println(target.getName() + " 체력: " + target.getHp());
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }
