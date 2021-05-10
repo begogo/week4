@@ -9,7 +9,7 @@ public class Goblin extends Monster {
         setRageMax(100);
         setRage(100);
         setAtk(30);
-        setAtkSpeed(1);
+        setAtkSpeed(0);
         System.out.println("고블린 출현");
     }
 

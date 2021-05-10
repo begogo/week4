@@ -2,7 +2,7 @@ import Unit.*;
 
 public class Main {
     public static void main(String[] args) {
-        Warrior warrior = Warrior.getInstance();
+        Warrior warrior = new Warrior();
         Goblin goblin = new Goblin();
 
         Thread t1 = new Thread(warrior);

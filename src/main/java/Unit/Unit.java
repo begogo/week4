@@ -18,13 +18,15 @@ public abstract class Unit implements Runnable {
     public void attack (Unit target) {
         while (getHp() > 0 && target.getHp() > 0){
             target.setHp(Math.max( 0, target.getHp() - getAtk() ));
-            System.out.println(getName() + "이(가) 기본공격으로 " + target.getName() + "에게 " + getAtk() + " 피해를 입혔습니다.");
-            System.out.println(target.getName() + " 체력: " + target.getHp());
+            System.out.println(getName() + "이(가) 기본공격으로 " + target.getName() + "에게 "
+                    + getAtk() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
+                    "-------------------------------------------------------------------------------------");
             try {
-                Thread.sleep(1000);
+                Thread.sleep((long) (2000*(1-getAtkSpeed())));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
