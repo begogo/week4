@@ -6,13 +6,14 @@ public class Main {
         Goblin goblin = new Goblin();
 
         Thread t1 = new Thread(warrior);
-        Thread t2 = new Thread(goblin);
+//        Thread t2 = new Thread(goblin);
 
         warrior.setTarget(goblin);
-        goblin.setTarget(warrior);
+//        goblin.setTarget(warrior);
 
+        System.out.println(warrior.getHp()+" "+goblin.getHp());
         t1.start();
-        t2.start();
+//        t2.start();
 
     }
 }

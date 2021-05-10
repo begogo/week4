@@ -3,24 +3,14 @@ package Unit;
 public class Warrior extends Player {
     private static Warrior warriorSingleton = new Warrior();
 
-    private final String name;
-    private int hpMax;
-    private int hp;
-    private int rageMax;
-    private int rage;
-    private int atk;
-    private double atkSpeed;
-    private Unit target;
-
     private Warrior (){
-        super();
-        this.name = "전사";
-        this.hpMax = 1000;
-        this.hp = 1000;
-        this.rageMax = 100;
-        this.rage = 100;
-        this.atk = 100;
-        this.atkSpeed = 1.5;
+        setName("전사");
+        setHpMax(1000);
+        setHp(1000);
+        setRageMax(100);
+        setRage(100);
+        setAtk(100);
+        setAtkSpeed(1.5);
         System.out.println("전사입니다");
     }
 
@@ -39,17 +29,20 @@ public class Warrior extends Player {
 
     @Override
     public void run(){
-        attack(warriorSingleton, target);
+        attack(warriorSingleton, getTarget());
     }
 
-    @Override
-    public String toString(){
-        return name;
-    }
-
-
-    public void setTarget(Unit target) {
-        this.target = target;
+    public void attack (Warrior attacker, Unit target) {
+        while (attacker.getHp() > 0 && target.getHp() > 0){
+            target.setHp(target.getHp() - attacker.getAtk());
+            System.out.println(attacker.getName() + "은(는) 기본공격으로 " + target.getName() + "에게 피해를 입혔습니다.");
+            System.out.println(target.getName() + " 체력: " + target.getHp());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
