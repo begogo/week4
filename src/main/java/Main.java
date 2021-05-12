@@ -1,7 +1,7 @@
 import Unit.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Warrior warrior = new Warrior();
         Goblin goblin = new Goblin();
 
@@ -13,6 +13,11 @@ public class Main {
 
         t1.start();
         t2.start();
+
+        t1.join();
+        t2.join();
+
+        warrior.callStatus();
 
     }
 }

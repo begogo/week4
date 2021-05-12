@@ -1,14 +1,12 @@
-Unit/Unit.java
- Unit.Unit
+Main.java
+ Main
 Unit/Goblin.java
  Unit.Goblin
-Unit/Orc.java
- Unit.Orc
 Unit/Monster.java
  Unit.Monster
 Unit/Player.java
  Unit.Player
-Main.java
- Main
+Unit/Unit.java
+ Unit.Unit
 Unit/Warrior.java
  Unit.Warrior

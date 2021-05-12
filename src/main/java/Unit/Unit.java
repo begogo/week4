@@ -6,30 +6,83 @@ public abstract class Unit implements Runnable {
     private int hp;
     private int rageMax;
     private int rage;
+    private int str;
     private int atk;
+    private int dmg;
     private double atkSpeed;
     private Unit target;
+    private int level;
+    private int xpRq;
+    private int xp;
+    private int monsterXp;
+    private int coin;
+    private int coinDrop;
 
     @Override
     public void run(){
         attack(getTarget());
     }
-
+    /* this의 기본공격 */
     public void attack (Unit target) {
         while (getHp() > 0 && target.getHp() > 0){
-            target.setHp(Math.max( 0, target.getHp() - getAtk() ));
+            target.setHp(Math.max( 0, target.getHp() - getDmg() ));
             System.out.println(getName() + "이(가) 기본공격으로 " + target.getName() + "에게 "
-                    + getAtk() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
+                    + getDmg() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
                     "-------------------------------------------------------------------------------------");
             try {
                 Thread.sleep((long) (2000*(1-getAtkSpeed())));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+        }
+        if (getHp() == 0 && this instanceof Player) {
+            System.out.println("플레이어 사망, 전투종료");
+        } else if (target.getHp() == 0 && target instanceof Monster) {
+            monsterDeath(target);
         }
     }
-
+    /* 몬스터 처치 후 이벤트: 경험치 상승, 전리품 획득 */
+    public void monsterDeath(Unit target) {
+        System.out.println(target.getName() + "을(를) 해치웠습니다. " + "경험치 " + target.getMonsterXp() + ", 코인 " + target.getCoinDrop() + "획득");
+        xpGet(target);
+        loot(target);
+    }
+    /* 경험치 상승: 요구치 채울 시 레벨업 */
+    public void xpGet(Unit target){
+        setXp(getXp()+target.getMonsterXp());
+        if(getXp() >= getXpRq()) levelUp();
+    }
+    /* 레벨업: 레벨상승, xp리셋, 힘상승, 최대체력상승, 체력전체회복*/
+    public void levelUp(){
+        int strGain = 5;
+        int hpMaxGain = 200;
+        System.out.println("레벨 업!! 레벨 "+(getLevel()+1)+": 힘 "+strGain+" 상승 / 최대체력 "+hpMaxGain+" 상승 및 체력회복");
+        setXp(getXp() - getXpRq());
+        setXpRq((int) (1000*getLevel()*0.5));
+        setLevel(getLevel()+1);
+        setStr(getStr() + strGain);
+        setHpMax(getHpMax() + hpMaxGain);
+        setHp(getHpMax());
+    }
+    /* 전리품 획득 */
+    public void loot(Unit target){
+        setCoin(getCoin() + target.getCoinDrop());
+    }
+    /* 상태 출력 */
+    public void callStatus(){
+        System.out.println("직업: "+getName());
+        System.out.println("최대체력: "+getHpMax());
+        System.out.println("현재체력: "+getHp());
+        System.out.println("최대분노: "+getRageMax());
+        System.out.println("현재분노: "+getRage());
+        System.out.println("힘: "+getStr());
+        System.out.println("공격력: "+getAtk());
+        System.out.println("피해량: "+getDmg());
+        System.out.println("공격속도: "+getAtkSpeed());
+        System.out.println("레벨: "+getLevel());
+        System.out.println("경험치: "+getXp()+" / "+getXpRq());
+        System.out.println("코인: "+getCoin());
+    }
 
 
     //getter&setter
@@ -49,11 +102,11 @@ public abstract class Unit implements Runnable {
         this.hpMax = hpMax;
     }
 
-    public int getHp() {
+    synchronized public int getHp() {
         return hp;
     }
 
-    public void setHp(int hp) {
+    synchronized public void setHp(int hp) {
         this.hp = hp;
     }
 
@@ -81,6 +134,14 @@ public abstract class Unit implements Runnable {
         this.atk = atk;
     }
 
+    public int getDmg() {
+        return dmg;
+    }
+
+    public void setDmg(int dmg) {
+        this.dmg = dmg;
+    }
+
     public double getAtkSpeed() {
         return atkSpeed;
     }
@@ -97,5 +158,60 @@ public abstract class Unit implements Runnable {
         this.target = target;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getStr() {
+        return str;
+    }
+
+    public void setStr(int str) {
+        this.str = str;
+    }
+
+    public int getXpRq() {
+        return xpRq;
+    }
+
+    public void setXpRq(int xpRq) {
+        this.xpRq = xpRq;
+    }
+
+    public int getXp() {
+        return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
+    }
+
+    public int getMonsterXp() {
+        return monsterXp;
+    }
+
+    public void setMonsterXp(int monsterXp) {
+        this.monsterXp = monsterXp;
+    }
+
+    public int getCoin() {
+        return coin;
+    }
+
+    public void setCoin(int coin) {
+        this.coin = coin;
+    }
+
+    public int getCoinDrop() {
+        return coinDrop;
+    }
+
+    public void setCoinDrop(int coinDrop) {
+        this.coinDrop = coinDrop;
+    }
 }
 
