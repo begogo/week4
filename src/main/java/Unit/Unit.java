@@ -1,6 +1,7 @@
 package Unit;
 
 public abstract class Unit implements Runnable {
+    private int id;
     private String name;
     private int hpMax;
     private int hp;
@@ -26,6 +27,7 @@ public abstract class Unit implements Runnable {
     public void attack (Unit target) {
         while (getHp() > 0 && target.getHp() > 0){
             target.setHp(Math.max( 0, target.getHp() - getDmg() ));
+            if(this instanceof Player) callStatus();
             System.out.println(getName() + "이(가) 기본공격으로 " + target.getName() + "에게 "
                     + getDmg() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
                     "-------------------------------------------------------------------------------------");
@@ -37,13 +39,16 @@ public abstract class Unit implements Runnable {
         }
         if (getHp() == 0 && this instanceof Player) {
             System.out.println("플레이어 사망, 전투종료");
+            gameOver();
         } else if (target.getHp() == 0 && target instanceof Monster) {
             monsterDeath(target);
         }
     }
     /* 몬스터 처치 후 이벤트: 경험치 상승, 전리품 획득 */
     public void monsterDeath(Unit target) {
-        System.out.println(target.getName() + "을(를) 해치웠습니다. " + "경험치 " + target.getMonsterXp() + ", 코인 " + target.getCoinDrop() + "획득");
+        System.out.println("########################몬스터 처치#####################");
+        System.out.println("##   "+target.getName() + "을(를) 해치웠습니다. " + "경험치 " + target.getMonsterXp() + ", 코인 " + target.getCoinDrop() + "획득   ##");
+        System.out.println("######################################################");
         xpGet(target);
         loot(target);
     }
@@ -56,11 +61,16 @@ public abstract class Unit implements Runnable {
     public void levelUp(){
         int strGain = 5;
         int hpMaxGain = 200;
-        System.out.println("레벨 업!! 레벨 "+(getLevel()+1)+": 힘 "+strGain+" 상승 / 최대체력 "+hpMaxGain+" 상승 및 체력회복");
+        System.out.println();
+        System.out.println();
+        System.out.println("레벨 업!! 레벨 "+(getLevel()+1)+":  힘 "+strGain+" 상승 + 최대체력 "+hpMaxGain+" 상승 및 체력회복");
+        System.out.println();
+        System.out.println();
+        setLevel(getLevel()+1);
         setXp(getXp() - getXpRq());
         setXpRq((int) (1000*getLevel()*0.5));
-        setLevel(getLevel()+1);
         setStr(getStr() + strGain);
+        setDmg( (int)(getAtk()*(1+((double)getStr()/10/100))) + getStr() );
         setHpMax(getHpMax() + hpMaxGain);
         setHp(getHpMax());
     }
@@ -70,22 +80,36 @@ public abstract class Unit implements Runnable {
     }
     /* 상태 출력 */
     public void callStatus(){
-        System.out.println("직업: "+getName());
-        System.out.println("최대체력: "+getHpMax());
-        System.out.println("현재체력: "+getHp());
-        System.out.println("최대분노: "+getRageMax());
-        System.out.println("현재분노: "+getRage());
-        System.out.println("힘: "+getStr());
-        System.out.println("공격력: "+getAtk());
-        System.out.println("피해량: "+getDmg());
-        System.out.println("공격속도: "+getAtkSpeed());
-        System.out.println("레벨: "+getLevel());
-        System.out.println("경험치: "+getXp()+" / "+getXpRq());
-        System.out.println("코인: "+getCoin());
+        System.out.println("******************플레이어 정보*******************");
+        System.out.print("직업:"+getName());
+        System.out.print("   레벨:"+getLevel());
+        System.out.print("   경험치: "+getXp()+" / "+getXpRq());
+        System.out.println("   코인:"+getCoin());
+        System.out.println("체력: "+getHp()+" / "+getHpMax());
+        System.out.println("분노: "+getRage()+" / "+getRageMax());
+        System.out.print("힘:"+getStr());
+        System.out.print("   공격력:"+getAtk());
+        System.out.print("   피해량:"+getDmg());
+        System.out.println("   공격속도:"+getAtkSpeed());
+        System.out.println("************************************************");
+    }
+    /* 게임오버 */
+    public void gameOver() {
+        System.out.println("게임종료");
+        System.exit(0);
     }
 
 
+
     //getter&setter
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

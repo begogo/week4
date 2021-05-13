@@ -3,6 +3,7 @@ package Unit;
 public class Goblin extends Monster {
 
     public Goblin(){
+        setId(0);
         setName("고블린");
         setHpMax(500);
         setHp(500);

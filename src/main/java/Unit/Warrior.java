@@ -8,9 +8,9 @@ public class Warrior extends Player {
         setHp(1000);
         setRageMax(100);
         setRage(100);
-        setStr(10);
-        setAtk(100);
-        setDmg(getAtk()*(1+getStr()/10/100) + getStr());
+        setStr(20);
+        setAtk(110);
+        setDmg( (int)(getAtk()*(1+((double)getStr()/10/100))) + getStr() );
         setAtkSpeed(0.1);
         setLevel(1);
         setXpRq(500);
