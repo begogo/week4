@@ -15,7 +15,6 @@ public class Goblin extends Monster {
         setAtkSpeed(0);
         setMonsterXp(90);
         setCoinDrop(300);
-        System.out.println("고블린 출현");
     }
 
 }

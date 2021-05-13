@@ -15,6 +15,5 @@ public class Orc extends Monster {
         setAtkSpeed(0);
         setMonsterXp(160);
         setCoinDrop(550);
-        System.out.println("오크 출현");
     }
 }

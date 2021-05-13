@@ -1,7 +1,10 @@
 package Unit;
 
+import java.util.Scanner;
+
 public abstract class Unit implements Runnable {
-    private int id;
+    Scanner scan = new Scanner(System.in);
+    private int id; //실제 쓰진 않음
     private String name;
     private int hpMax;
     private int hp;
@@ -9,34 +12,63 @@ public abstract class Unit implements Runnable {
     private int rage;
     private int str;
     private int atk;
-    private int dmg;
+    private int dmg; // str과 atk 이용해 계산
     private double atkSpeed;
     private Unit target;
     private int level;
     private int xpRq;
     private int xp;
     private int monsterXp;
-    private int coin;
-    private int coinDrop;
+    private int coin; // 플레이어 보유 골드
+    private int coinDrop; // 몬스터가 드랍하는 골드
 
     @Override
     public void run(){
-        attack(getTarget());
+        try {
+            attack(getTarget());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-    /* this의 기본공격 */
-    public void attack (Unit target) {
+    /* this의 공격 로직 */
+    public void attack (Unit target) throws InterruptedException {
+        /* 스킬 스레드 로직 */
+        Thread skill = new Thread(()->{
+            while (!Thread.currentThread().isInterrupted() && target.getHp() > 0){
+                int input = scan.nextInt();
+                if (input == 1) {
+                    target.setHp(Math.max( 0, target.getHp() - getDmg()*2 ));
+                    System.out.println(getName() + "이(가) 스킬로 " + target.getName() + "에게 "
+                            + getDmg()*2 + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
+                            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                }
+            }
+        });
+        /* 플레이어/몬스터 구분 */
+        if(target instanceof Monster){
+            System.out.println();
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            System.out.println("@@@@@@@@@@@@@ "+target.getName()+" 출현!! @@@@@@@@@@@@@@");
+        }
+        /* 전투 loop */
         while (getHp() > 0 && target.getHp() > 0){
             target.setHp(Math.max( 0, target.getHp() - getDmg() ));
             if(this instanceof Player) callStatus();
             System.out.println(getName() + "이(가) 기본공격으로 " + target.getName() + "에게 "
                     + getDmg() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
                     "-------------------------------------------------------------------------------------");
+            if(this instanceof Player) System.out.println("!!!!!!!!!!!!!!! 숫자1 입력으로 스킬 사용 가능 !!!!!!!!!!!!!!!!");
+            /* 스킬 스레드 실행 조건: this==Player && 스레드 호출 안된 상태 */
+            if(this instanceof Player && skill.getState() == Thread.State.NEW) skill.start();
+            /* 공격속도 */
             try {
-                Thread.sleep((long) (2000*(1-getAtkSpeed())));
+                Thread.sleep((long) (3000*(1-getAtkSpeed())));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        } //while loop
+        skill.interrupt(); // 전투종료 시 스킬 스레드 종료
+        /* 전투결과 */
         if (getHp() == 0 && this instanceof Player) {
             System.out.println("플레이어 사망, 전투종료");
             gameOver();
@@ -44,7 +76,7 @@ public abstract class Unit implements Runnable {
             monsterDeath(target);
         }
     }
-    /* 몬스터 처치 후 이벤트: 경험치 상승, 전리품 획득 */
+    /* 몬스터 처치: 경험치 상승, 전리품 획득 */
     public void monsterDeath(Unit target) {
         System.out.println("########################몬스터 처치#####################");
         System.out.println("##   "+target.getName() + "을(를) 해치웠습니다. " + "경험치 " + target.getMonsterXp() + ", 코인 " + target.getCoinDrop() + "획득   ##");
@@ -57,14 +89,13 @@ public abstract class Unit implements Runnable {
         setXp(getXp()+target.getMonsterXp());
         if(getXp() >= getXpRq()) levelUp();
     }
-    /* 레벨업: 레벨상승, xp리셋, 힘상승, 최대체력상승, 체력전체회복*/
+    /* 레벨업: 레벨상승, xp리셋, 힘상승, 최대체력상승, 체력전체회복 */
     public void levelUp(){
         int strGain = 5;
         int hpMaxGain = 200;
         System.out.println();
         System.out.println();
         System.out.println("레벨 업!! 레벨 "+(getLevel()+1)+":  힘 "+strGain+" 상승 + 최대체력 "+hpMaxGain+" 상승 및 체력회복");
-        System.out.println();
         System.out.println();
         setLevel(getLevel()+1);
         setXp(getXp() - getXpRq());
@@ -80,6 +111,7 @@ public abstract class Unit implements Runnable {
     }
     /* 상태 출력 */
     public void callStatus(){
+        System.out.println();
         System.out.println("******************플레이어 정보*******************");
         System.out.print("직업:"+getName());
         System.out.print("   레벨:"+getLevel());
