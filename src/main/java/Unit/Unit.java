@@ -2,6 +2,8 @@ package Unit;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class Unit implements Runnable {
     Scanner scan = new Scanner(System.in);
@@ -36,7 +38,7 @@ public abstract class Unit implements Runnable {
         /* 스킬 스레드 로직 */
         Thread skill = new Thread(()->{
             while (!Thread.currentThread().isInterrupted() && target.getHp() > 0){
-                int input;
+                int input = 0;
                 while (true) {
                     try{
                         input = scan.nextInt();
@@ -46,7 +48,9 @@ public abstract class Unit implements Runnable {
                         scan = new Scanner(System.in);
                     }
                 }
-                if (input == 1) {
+                if (target.getHp()==0) {
+                    System.out.println("대상이 없습니다.");
+                } else if (input==1 && target.getHp()>0) {
                     target.setHp(Math.max( 0, target.getHp() - getDmg()*2 ));
                     System.out.println(getName() + "이(가) **분쇄** 스킬로 " + target.getName() + "에게 "
                             + getDmg()*2 + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
@@ -74,7 +78,6 @@ public abstract class Unit implements Runnable {
             System.out.println(getName() + "이(가) **기본공격** 으로 " + target.getName() + "에게 "
                     + getDmg() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
                     "----------------------------!!! 숫자 입력으로 스킬 사용 가능 !!!------------------------");
-//            if(this instanceof Player) System.out.println("!!!!!!!!!!!!!!! 숫자 입력으로 스킬 사용 가능 !!!!!!!!!!!!!!!!");
             /* 스킬 스레드 실행 조건: this==Player && 스킬 스레드 호출 안된 상태 */
             if(this instanceof Player && skill.getState() == Thread.State.NEW) {
                 skill.setDaemon(true);
@@ -87,7 +90,13 @@ public abstract class Unit implements Runnable {
                 e.printStackTrace();
             }
         } //while loop
-//        skill.interrupt(); // 전투종료 시 스킬 스레드 종료
+        /* 스킬 스레드 종료 */
+        skill.interrupt(); // 전투종료 시 스킬 스레드 종료
+        /* interrupt로 종료가 안돼서 join 사용 */
+        if (skill.getState() == Thread.State.RUNNABLE){
+            System.out.println("정상적인 전투종료를 위해 스킬을 입력하세요.");
+            skill.join();
+        }
         /* 전투결과 */
         if (getHp() == 0 && this instanceof Player) {
             System.out.println("플레이어 사망, 전투종료");
@@ -150,7 +159,6 @@ public abstract class Unit implements Runnable {
         System.out.println("게임종료");
         System.exit(0);
     }
-
 
 
     //getter&setter
