@@ -1,0 +1,27 @@
+레벨업: 체력회복, 최대체력증가, 스탯증가 ㅇ
+경험치 ㅇ
+드랍템 ㅇ
+인터페이스, 반복진행 ㅇ
+상점
+시간
+스킬과 분노
+다중타겟 전투
+체력바
+
+
+
+
+                int finalInput = input;
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if(finalInput == 0){
+                            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> finalinput은 0");
+                        }
+                    }
+                };
+                Timer timer = new Timer();
+                timer.schedule(task, 2000);
+
+                timer.cancel();
+
