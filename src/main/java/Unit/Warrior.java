@@ -7,7 +7,7 @@ public class Warrior extends Player {
         setHpMax(1000);
         setHp(1000);
         setRageMax(100);
-        setRage(100);
+        setRage(0);
         setStr(20);
         setAtk(110);
         setDmg((int)(getAtk()*(1+((double)getStr()/10/100))) + getStr());

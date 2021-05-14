@@ -2,8 +2,6 @@ package Unit;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public abstract class Unit implements Runnable {
     Scanner scan = new Scanner(System.in);
@@ -38,7 +36,7 @@ public abstract class Unit implements Runnable {
         /* 스킬 스레드 로직 */
         Thread skill = new Thread(()->{
             while (!Thread.currentThread().isInterrupted() && target.getHp() > 0){
-                int input = 0;
+                int input;
                 while (true) {
                     try{
                         input = scan.nextInt();
@@ -48,15 +46,21 @@ public abstract class Unit implements Runnable {
                         scan = new Scanner(System.in);
                     }
                 }
+                int skill1_Rage = 15;
                 if (target.getHp()==0) {
                     System.out.println("대상이 없습니다.");
-                } else if (input==1 && target.getHp()>0) {
-                    target.setHp(Math.max( 0, target.getHp() - getDmg()*2 ));
-                    System.out.println(getName() + "이(가) **분쇄** 스킬로 " + target.getName() + "에게 "
-                            + getDmg()*2 + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
-                            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                } else {
+                } else if (input!=1){
                     System.out.println(">>>>>> 발동 가능한 스킬 입력이 아닙니다.");
+                } else if (input==1 && getRage()<skill1_Rage){
+                    System.out.println(">>>>>> 분노가 부족합니다.(분쇄: 필요 분노 25)");
+                } else if (input==1 && getRage()>=skill1_Rage && target.getHp()>0) {
+                    target.setHp(Math.max( 0, target.getHp() - (int)(getDmg()*1.25) ));
+                    System.out.println("**"+getName() + "**이(가) **분쇄** 스킬로 **" + target.getName() + "**에게 "
+                            + (int)(getDmg()*1.25)  + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
+                            "       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    setRage(getRage()-skill1_Rage);
+                } else {
+                    System.out.println("로직 에러");
                 }
             }
         });
@@ -75,9 +79,11 @@ public abstract class Unit implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(getName() + "이(가) **기본공격** 으로 " + target.getName() + "에게 "
+            System.out.println("**"+getName() + "**이(가) **기본공격** 으로 **" + target.getName() + "**에게 "
                     + getDmg() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
                     "----------------------------!!! 숫자 입력으로 스킬 사용 가능 !!!------------------------");
+            if(this instanceof Player) setRage(Math.min(100, getRage()+5));
+            if(this instanceof Monster) target.setRage(Math.min(100, target.getRage()+5));
             /* 스킬 스레드 실행 조건: this==Player && 스킬 스레드 호출 안된 상태 */
             if(this instanceof Player && skill.getState() == Thread.State.NEW) {
                 skill.setDaemon(true);
@@ -102,6 +108,7 @@ public abstract class Unit implements Runnable {
             System.out.println("플레이어 사망, 전투종료");
             gameOver();
         } else if (target.getHp() == 0 && target instanceof Monster) {
+            setRage(0);
             monsterDeath(target);
         }
     }
@@ -146,8 +153,8 @@ public abstract class Unit implements Runnable {
         System.out.print("   레벨:"+getLevel());
         System.out.print("   경험치: "+getXp()+" / "+getXpRq());
         System.out.println("   코인:"+getCoin());
-        System.out.println("체력: "+getHp()+" / "+getHpMax());
-        System.out.println("분노: "+getRage()+" / "+getRageMax());
+        System.out.print("체력: "+getHp()+" / "+getHpMax());
+        System.out.println("    분노: "+getRage()+" / "+getRageMax());
         System.out.print("힘:"+getStr());
         System.out.print("   공격력:"+getAtk());
         System.out.print("   피해량:"+getDmg());
@@ -202,11 +209,11 @@ public abstract class Unit implements Runnable {
         this.rageMax = rageMax;
     }
 
-    public int getRage() {
+    synchronized public int getRage() {
         return rage;
     }
 
-    public void setRage(int rage) {
+    synchronized public void setRage(int rage) {
         this.rage = rage;
     }
 
