@@ -1,5 +1,6 @@
 package Unit;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public abstract class Unit implements Runnable {
@@ -35,12 +36,23 @@ public abstract class Unit implements Runnable {
         /* 스킬 스레드 로직 */
         Thread skill = new Thread(()->{
             while (!Thread.currentThread().isInterrupted() && target.getHp() > 0){
-                int input = scan.nextInt();
+                int input;
+                while (true) {
+                    try{
+                        input = scan.nextInt();
+                        break;
+                    } catch (InputMismatchException ime){
+                        System.out.println(">>>>>> 스킬은 정수만 입력 가능합니다.");
+                        scan = new Scanner(System.in);
+                    }
+                }
                 if (input == 1) {
                     target.setHp(Math.max( 0, target.getHp() - getDmg()*2 ));
-                    System.out.println(getName() + "이(가) 스킬로 " + target.getName() + "에게 "
+                    System.out.println(getName() + "이(가) **분쇄** 스킬로 " + target.getName() + "에게 "
                             + getDmg()*2 + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
                             "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                } else {
+                    System.out.println(">>>>>> 발동 가능한 스킬 입력이 아닙니다.");
                 }
             }
         });
@@ -54,12 +66,14 @@ public abstract class Unit implements Runnable {
         while (getHp() > 0 && target.getHp() > 0){
             target.setHp(Math.max( 0, target.getHp() - getDmg() ));
             if(this instanceof Player) callStatus();
-            System.out.println(getName() + "이(가) 기본공격으로 " + target.getName() + "에게 "
+            System.out.println(getName() + "이(가) **기본공격** 으로 " + target.getName() + "에게 "
                     + getDmg() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
                     "-------------------------------------------------------------------------------------");
-            if(this instanceof Player) System.out.println("!!!!!!!!!!!!!!! 숫자1 입력으로 스킬 사용 가능 !!!!!!!!!!!!!!!!");
-            /* 스킬 스레드 실행 조건: this==Player && 스레드 호출 안된 상태 */
-            if(this instanceof Player && skill.getState() == Thread.State.NEW) skill.start();
+            if(this instanceof Player) System.out.println("!!!!!!!!!!!!!!! 숫자 입력으로 스킬 사용 가능 !!!!!!!!!!!!!!!!");
+            /* 스킬 스레드 실행 조건: this==Player && 스킬 스레드 호출 안된 상태 */
+            if(this instanceof Player && skill.getState() == Thread.State.NEW) {
+                skill.start();
+            }
             /* 공격속도 */
             try {
                 Thread.sleep((long) (3000*(1-getAtkSpeed())));

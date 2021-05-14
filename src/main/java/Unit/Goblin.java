@@ -11,7 +11,7 @@ public class Goblin extends Monster {
         setRage(100);
         setStr(5);
         setAtk(30);
-        setDmg(getAtk()*(1+getStr()/10/100) + getStr());
+        setDmg((int)(getAtk()*(1+((double)getStr()/10/100))) + getStr());
         setAtkSpeed(0);
         setMonsterXp(90);
         setCoinDrop(300);

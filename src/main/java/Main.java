@@ -1,6 +1,7 @@
 import Unit.*;
 
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -14,9 +15,21 @@ public class Main {
         Warrior warrior = new Warrior();
 
         while(true) {
-            System.out.println("1)탐색 2)상점");
-            int choice = scan.nextInt();
-            switch (choice){
+            System.out.println();
+            System.out.println("행동을 선택하세요.");
+            System.out.println("1)몬스터 탐색   2)상점 방문");
+            int input;
+            while (true) {
+                try{
+                    input = scan.nextInt();
+                    break;
+                } catch (InputMismatchException ime){
+                    System.out.println("메뉴는 정수만 입력 가능");
+                    scan = new Scanner(System.in);
+                }
+            }
+
+            switch (input){
                 case 1:
                     Unit monster1 = monsterList.get((int)(Math.random()*2));
                     Thread t1 = new Thread(warrior);
