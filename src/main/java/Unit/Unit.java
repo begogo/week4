@@ -66,12 +66,18 @@ public abstract class Unit implements Runnable {
         while (getHp() > 0 && target.getHp() > 0){
             target.setHp(Math.max( 0, target.getHp() - getDmg() ));
             if(this instanceof Player) callStatus();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.println(getName() + "이(가) **기본공격** 으로 " + target.getName() + "에게 "
                     + getDmg() + " 피해를 입혔습니다. ("+target.getName()+"의 현재체력: "+target.getHp()+")\n" +
-                    "-------------------------------------------------------------------------------------");
-            if(this instanceof Player) System.out.println("!!!!!!!!!!!!!!! 숫자 입력으로 스킬 사용 가능 !!!!!!!!!!!!!!!!");
+                    "----------------------------!!! 숫자 입력으로 스킬 사용 가능 !!!------------------------");
+//            if(this instanceof Player) System.out.println("!!!!!!!!!!!!!!! 숫자 입력으로 스킬 사용 가능 !!!!!!!!!!!!!!!!");
             /* 스킬 스레드 실행 조건: this==Player && 스킬 스레드 호출 안된 상태 */
             if(this instanceof Player && skill.getState() == Thread.State.NEW) {
+                skill.setDaemon(true);
                 skill.start();
             }
             /* 공격속도 */
@@ -81,7 +87,7 @@ public abstract class Unit implements Runnable {
                 e.printStackTrace();
             }
         } //while loop
-        skill.interrupt(); // 전투종료 시 스킬 스레드 종료
+//        skill.interrupt(); // 전투종료 시 스킬 스레드 종료
         /* 전투결과 */
         if (getHp() == 0 && this instanceof Player) {
             System.out.println("플레이어 사망, 전투종료");

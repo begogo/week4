@@ -15,8 +15,7 @@ public class Main {
         Warrior warrior = new Warrior();
 
         while(true) {
-            System.out.println();
-            System.out.println("행동을 선택하세요.");
+            System.out.print("행동을 선택하세요. ");
             System.out.println("1)몬스터 탐색   2)상점 방문");
             int input;
             while (true) {
